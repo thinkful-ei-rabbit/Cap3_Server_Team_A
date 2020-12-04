@@ -5,11 +5,11 @@
 
 <!-- ! highlight and 'ctrl+shift+L' to replace all ! -->
 
-thinkful-ei-rabbit
-Cap3_Server_Team_A
-theSwattr
-React, Node.js, Postgresql
-API-DEPLOY-URL-HERE
+<!-- thinkful-ei-rabbit -->
+<!-- Cap3_Server_Team_A -->
+<!-- theSwattr -->
+<!-- React, Node.js, Postgresql -->
+<!-- https://the-swattr.herokuapp.com/api -->
 
 <!-- ! highlight and 'ctrl+shift+L' to replace all ! -->
 
@@ -51,7 +51,7 @@ API-DEPLOY-URL-HERE
 >
 > _If you'd like to test the server via Postman, visit the client app..._
 >
-> <div><a href="https://API-DEPLOY-URL-HERE">here</a></div>
+> <div><a href="https://https://the-swattr.herokuapp.com/api">here</a></div>
 >
 > _...register a user, grab your Bearer Token in dev tools, and use this endpoint: https://glacial-basin-85263.herokuapp.com/setapp/v1_
 >
@@ -144,7 +144,19 @@ const errorHandler: ErrorRequestHandler = (error: Express.ExtError, _req, res, _
 
 ## migrations, seeds
 
-Nothing much to say here, simple SQL code to seed the database
+Nothing much to say here, simple SQL code to seed the database. However, there are some custom SQL functions in the last few migrations:
+
+### Migration 10 - Functions
+
+These are primarily for easily updating linkage tables via user functions. Nothing too complex, just simple `IF` and `CASE` blocks for some validation, then automated updates to tables.
+
+The third function `init_app_severity()` is for the initial bug creation process, and acts as a one-time helper to call the other linkage-update functions.
+
+### Migration 11 - Triggers
+
+These are used for controlling the `updated_at` column for bugs, and for controlling the current status for a bug. Essentially, any time a comment or update on a bug is performed, a trigger will `UPDATE` the `updated_at` of that particular bug.
+
+On initial bug creation, another trigger will fire and update the status linkage table, assigning a 'pending' default status. Additionally, a similar trigger will run on any comment table update and, if the status is not already 'open', will assign the bug so. There's also a guard against updating a 'closed' bug.
 
 ---
 
@@ -217,7 +229,7 @@ Not strictly necessary, but this can help prevent typos, along with making chang
 
 ## libs:
 
-A simple Winston logger, though bacause Heroku doesn't support writing logs in this way, the transports aren't created during production.
+A simple Winston logger, though bacause Heroku doesn't support writing logs in this way so the transports aren't created during production.
 
 ---
 
@@ -229,7 +241,7 @@ Though it may be inconsequential for a server of this scale, it should be known 
 
 I can create both the `app` and `jsonBodyParser` (which is just middleware), and extract the `Router()` method itself (to be used as a sort of local "helper" function). Beacuase these are now local dependencies, I can import these wherever I want without an impact on runtime performance.
 
--Derek Nelis
+-Derek Nellis
 
 #### body-validators.js:
 
@@ -243,64 +255,81 @@ There's nothing too special here, just basic Token authentication, password encr
 
 ## routes:
 
-- bugs: /api/bugs
+#### bug: `/api/bugs`
 
 ```
-  '/'  -   GET, POST (all bugs)
-  '/:id' - GET (bug by id)
-  '/user/:userName' - GET (bugs by user)
-  '/severity/:severity' - GET (bugs by severity)
-  '/app/:app' - GET (bugs by app)
+  '/'                 -  GET, POST (all bugs)
+  '/:id'              -  GET (bug by id)
+  '/user/:userName'   -  GET (bugs by user)
+  '/app/:app'         -  GET (bugs by app)
+  '/status/:status'   -  GET (bugs by status)
+  '/severity/:level'  -  GET (bugs by severity)
 
 ```
 
-- app: /api/app
+#### app: `/api/app`
 
 ```
-  '/' - GET (graps all app names)
+  '/'          -  GET (gets all app names)
+  '/severity'  -  GET (gets all severity names)
+  '/status'    -  GET (gets all status names)
 ```
 
-- users: /api/users
+#### users: `/api/users`
 
 ```
-  '/' - GET (gets all users)
-  '/token' - GET (grabs auth token)
-  '/login' - POST (posts login)
-  '/register' - POST (posts new user)
-  '/dev' - PATCH (edits dev status of user)
+  '/'               -  GET (gets all users)
+  '/token'          -  GET (for auth token refreshing)
+  '/login'          -  POST (posts login)
+  '/register'       -  POST (posts new user)
+  '/dev'            -  PATCH (toggles dev status of self)
+  '/dev/:userName'  -  PATCH (toggles dev status of user)
 ```
 
-- comments: /api/comments
+#### comment: `/api/comments`
 
 ```
-  '/' - GET, POST (Get all comments or post one)
-  '/:id' - GET (get comment by id)
+  '/'                -  GET, POST (get all/post comments)
+  '/:id'             -  GET, PATCH, DELETE (CRUD operations by id)
+  '/bug/:bugId'      -  GET (get comments for bug)
+  '/user/:userName'  -  GET (get comments posted by user)
 ```
 
-- sort: /api/sort
+#### sort-bugs: `/api/sort`
 
 ```
-  '/severity/:app' - GET (returns arrays of bugs based on severity sorted by status)
+  [ '/status/:app', '/app', '/severity/:app' ]
+  GET (returns arrays of bugs sorted by status/app/severity)
 ```
 
-- edit bugs: /edit
+#### edit-bugs: `/edit`
 
 ```
   '/:bugId' - PATCH (edits a specific bug)
 ```
 
-## database:
+## database ERM:
 
 <div align="center">
   <h5>A brief overview of the database:</h5>
-  <img src="images/ermDB.jpg" alt="erm" width="500">
+  <img src="images/db-ERM.png" alt="erm" width="500">
 </div>
-
-> _This isn't 100% representative of the current database implementation, but from a relationship view this is how the Server operates. Currently, the following tables are implemented: users, songs, sets, songs_sets_
 
 ---
 
 ## services:
+
+### CRUD.service.js
+
+Dynamic Knex Query-Builder methods for all basic CRUD operations.
+
+### query.service.js
+
+If anything outside of basic `SELECT` operations are needed (like table joins, grouping, etc), they're in here.
+
+### serialize.service.js
+
+Passes all submissions through here for sanitization, and formats raw database queries into a more javascript-friendly format.
 
 ---
 

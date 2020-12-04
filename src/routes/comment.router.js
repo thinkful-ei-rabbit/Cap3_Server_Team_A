@@ -106,17 +106,17 @@ commentRouter
   );
 
 commentRouter
-  .route('/:commId')
+  .route('/:id')
   .all(async (req, res, next) => {
     try {
-      const { commId } = req.params;
+      const { id } = req.params;
       const { dev, user_name } = req.dbUser;
 
       const comment = await CRUDService.getBySearch(
         req.app.get('db'),
         TABLE_NAME,
         'id',
-        commId,
+        id,
       );
 
       if (!comment || (!dev && comment.user_name !== user_name)) {
@@ -154,7 +154,7 @@ commentRouter
     validate.commentBody,
     async (req, res, next) => {
       try {
-        const { commId } = req.params;
+        const { id } = req.params;
         const { bug_id } = req.newComment;
 
         if (+req.comment.bug_id !== +bug_id) {
@@ -168,7 +168,7 @@ commentRouter
           req.app.get('db'),
           TABLE_NAME,
           'id',
-          commId,
+          id,
           req.newComment,
         );
 
@@ -184,13 +184,13 @@ commentRouter
   )
   .delete(async (req, res, next) => {
     try {
-      const { commId } = req.params;
+      const { id } = req.params;
 
       const [rawComment] = await CRUDService.deleteEntry(
         req.app.get('db'),
         TABLE_NAME,
         'id',
-        commId,
+        id,
       );
 
       rawComment.bug_name = req.comment.bug_name;

@@ -96,6 +96,40 @@ bugRouter
     }
   });
 
+bugRouter.route('/:id').get(async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { dev, user_name } = req.dbUser;
+
+    const rawBug = await CRUDService.getBySearch(
+      req.app.get('db'),
+      TABLE_NAME,
+      'id',
+      id,
+    );
+
+    if (!dev && rawBug.user_name !== user_name) {
+      res.status(401).json({ error: 'Unauthorized bug ID request' });
+      return;
+    }
+
+    const links = await QueryService.grabBugLinkages(
+      req.app.get('db'),
+      rawBug.id,
+    );
+
+    rawBug.status = links.status_name;
+    rawBug.app = links.app_name;
+    rawBug.severity = links.level;
+
+    const editBug = SerializeService.formatBug(rawBug);
+
+    res.status(200).json(editBug);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // ? Filter routes...
 bugRouter.route('/user/:userName').get(async (req, res, next) => {
   try {
@@ -274,40 +308,6 @@ bugRouter.route('/severity/:level').get(async (req, res, next) => {
       : [{ message: `No bugs found with severity: '${level}'` }];
 
     res.status(200).json({ bugs });
-  } catch (error) {
-    next(error);
-  }
-});
-
-bugRouter.route('/:id').get(async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { dev, user_name } = req.dbUser;
-
-    const rawBug = await CRUDService.getBySearch(
-      req.app.get('db'),
-      TABLE_NAME,
-      'id',
-      id,
-    );
-
-    if (!dev && rawBug.user_name !== user_name) {
-      res.status(401).json({ error: 'Unauthorized bug ID request' });
-      return;
-    }
-
-    const links = await QueryService.grabBugLinkages(
-      req.app.get('db'),
-      rawBug.id,
-    );
-
-    rawBug.status = links.status_name;
-    rawBug.app = links.app_name;
-    rawBug.severity = links.level;
-
-    const editBug = SerializeService.formatBug(rawBug);
-
-    res.status(200).json(editBug);
   } catch (error) {
     next(error);
   }

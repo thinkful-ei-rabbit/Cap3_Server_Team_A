@@ -24,18 +24,18 @@ const logger = winston.createLogger();
 
 const filename = path.resolve(__dirname, `logs/winston_logs.log`);
 
-logger.add(
-  new winston.transports.File({
-    filename,
-    level: 'http',
-    maxsize: 20000000, // 20MB
-    tailable: true,
-    zippedArchive: true,
-    format: fileFormat,
-  }),
-);
-
 if (NODE_ENV === 'development') {
+  logger.add(
+    new winston.transports.File({
+      filename,
+      level: 'http',
+      maxsize: 20000000, // 20MB
+      tailable: true,
+      zippedArchive: true,
+      format: fileFormat,
+    }),
+  );
+
   logger.add(
     new winston.transports.Console({
       level: 'silly',

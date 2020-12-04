@@ -152,9 +152,7 @@ usersRouter
         !user.dev,
       );
 
-      res
-        .status(201)
-        .json({ [userName]: `Dev status: ${!user.dev}` });
+      res.status(201).json({ [userName]: `Dev status: ${!user.dev}` });
     } catch (error) {
       next(error);
     }

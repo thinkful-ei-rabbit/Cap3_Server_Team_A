@@ -23,7 +23,7 @@ describe('Route: Sort-Bugs router', () => {
   after('disconnect from db', () => db.destroy());
 
   const authHeaders = { dev: {}, nonDev: {} };
-  beforeEach('set auth headers', async () => {
+  beforeEach('seed all tables and set auth headers', async () => {
     await helpers.seedAllTables(db);
 
     authHeaders.dev = await helpers.getAuthHeaders(
@@ -52,8 +52,8 @@ describe('Route: Sort-Bugs router', () => {
       const tests = [nonDevResults, devResults];
 
       tests.forEach((expected, isDev) => {
-        const text = isDev ? 'dev' : 'non-dev';
         const ENDPOINT = SORT_BUGS_EP + sortRoutes[type];
+        const text = isDev ? 'dev' : 'non-dev';
 
         // ? only run once per route
         if (!isDev) {
@@ -68,7 +68,7 @@ describe('Route: Sort-Bugs router', () => {
           });
         }
 
-        it(`returns sorted arrays by ${text}`, () => {
+        it(`returns sorted arrays for a ${text}`, () => {
           const headers = isDev ? authHeaders.dev : authHeaders.nonDev;
 
           return supertest(app)
@@ -76,11 +76,10 @@ describe('Route: Sort-Bugs router', () => {
             .set(headers)
             .expect(200)
             .then((res) => {
-              const { body } = res;
               const keys = Object.keys(expected);
               keys.forEach((key) => {
                 expected[key].forEach((bug, idx) => {
-                  const resBug = body[key][idx];
+                  const resBug = res.body[key][idx];
                   const { createdDate, updatedDate } = resBug;
                   const expBug = { ...bug, createdDate, updatedDate };
 

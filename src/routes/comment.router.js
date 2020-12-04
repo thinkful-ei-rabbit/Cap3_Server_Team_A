@@ -18,7 +18,7 @@ async function _bugName(db, bug_id, dev, user_name) {
     bug_id,
   );
 
-  if (dev || bug.user_name === user_name) {
+  if (dev || bug?.user_name === user_name) {
     return bug.bug_name;
   }
 
@@ -106,27 +106,36 @@ commentRouter
   );
 
 commentRouter
-  .route('/:id')
+  .route('/:commId')
   .all(async (req, res, next) => {
     try {
-      const { id } = req.params;
+      const { commId } = req.params;
       const { dev, user_name } = req.dbUser;
 
-      const bug_name = await _bugName(
+      const comment = await CRUDService.getBySearch(
         req.app.get('db'),
-        id,
-        dev,
-        user_name,
+        TABLE_NAME,
+        'id',
+        commId,
       );
 
-      if (!bug_name) {
+      if (!comment || (!dev && comment.user_name !== user_name)) {
         res.status(401).json({
-          error: 'Bug not found/unauthorized comment query',
+          error: 'Comment not found/unauthorized comment query',
         });
         return;
       }
 
-      req.bug_name = bug_name;
+      const bug_name = await _bugName(
+        req.app.get('db'),
+        comment.bug_id,
+        dev,
+        user_name,
+      );
+
+      comment.bug_name = bug_name;
+
+      req.comment = comment;
       next();
     } catch (error) {
       next(error);
@@ -134,17 +143,7 @@ commentRouter
   })
   .get(async (req, res, next) => {
     try {
-      const rawComment = await CRUDService.getBySearch(
-        req.app.get('db'),
-        TABLE_NAME,
-        'id',
-        req.params.id,
-      );
-
-      rawComment.bug_name = req.bug_name;
-
-      const comment = SerializeService.formatComment(rawComment);
-
+      const comment = SerializeService.formatComment(req.comment);
       res.status(200).json(comment);
     } catch (error) {
       next(error);
@@ -155,21 +154,29 @@ commentRouter
     validate.commentBody,
     async (req, res, next) => {
       try {
-        const [updComment] = await CRUDService.updateEntry(
+        const { commId } = req.params;
+        const { bug_id } = req.newComment;
+
+        if (+req.comment.bug_id !== +bug_id) {
+          res.status(401).json({
+            error: 'Bug ID conflict in body',
+          });
+          return;
+        }
+
+        const [rawComment] = await CRUDService.updateEntry(
           req.app.get('db'),
           TABLE_NAME,
           'id',
-          req.params.id,
+          commId,
           req.newComment,
         );
 
-        updComment.bug_name = req.bug_name;
+        rawComment.bug_name = req.comment.bug_name;
 
-        const comment = SerializeService.formatComment(updComment);
+        const updComment = SerializeService.formatComment(rawComment);
 
-        res
-          .status(200)
-          .json({ message: 'Update successful', comment });
+        res.status(200).json({ updComment });
       } catch (error) {
         next(error);
       }
@@ -177,18 +184,20 @@ commentRouter
   )
   .delete(async (req, res, next) => {
     try {
-      const [delComment] = await CRUDService.deleteEntry(
+      const { commId } = req.params;
+
+      const [rawComment] = await CRUDService.deleteEntry(
         req.app.get('db'),
         TABLE_NAME,
         'id',
-        req.params.id,
+        commId,
       );
 
-      delComment.bug_name = req.bug_name;
+      rawComment.bug_name = req.comment.bug_name;
 
-      const comment = SerializeService.formatComment(delComment);
+      const delComment = SerializeService.formatComment(rawComment);
 
-      res.status(200).json({ message: 'Delete successful', comment });
+      res.status(200).json({ delComment });
     } catch (error) {
       next(error);
     }
@@ -207,9 +216,7 @@ commentRouter.route('/bug/:bugId').get(async (req, res, next) => {
     );
 
     if (!bug_name) {
-      res
-        .status(401)
-        .json({ error: 'Bug not found/unauthorized comment query' });
+      res.status(401).json({ error: 'Unauthorized comment query' });
       return;
     }
 
@@ -240,12 +247,19 @@ commentRouter.route('/user/:userName').get(async (req, res, next) => {
     const { userName } = req.params;
     const { dev, user_name } = req.dbUser;
 
+    if (!dev && userName !== user_name) {
+      res.status(401).json({
+        error: 'Unauthorized comment query',
+      });
+      return;
+    }
+
     const rawComments = await CRUDService.getAllBySearchOrder(
       req.app.get('db'),
       TABLE_NAME,
       'user_name',
       userName,
-      'updated_at',
+      'created_at',
     );
 
     for (let i = 0; i < rawComments.length; i++) {

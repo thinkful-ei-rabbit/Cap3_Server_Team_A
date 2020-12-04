@@ -22,14 +22,17 @@ const status_seed = [
     id: 1,
     status_name: 'pending',
   },
+
   {
     id: 2,
     status_name: 'open',
   },
+
   {
     id: 3,
     status_name: 'closed',
   },
+
   {
     id: 4,
     status_name: 'dormant',
@@ -41,6 +44,7 @@ const app_seed = [
     id: 1,
     app_name: 'main-app',
   },
+
   {
     id: 2,
     app_name: 'second-app',
@@ -52,14 +56,17 @@ const severity_level_seed = [
     id: 1,
     level: 'low',
   },
+
   {
     id: 2,
     level: 'medium',
   },
+
   {
     id: 3,
     level: 'high',
   },
+
   {
     id: 4,
     level: 'pending',
@@ -97,6 +104,7 @@ const users_seed = [
     email: 'user1@yoohoo.com',
     dev: true,
   },
+
   {
     first_name: 'first_name2',
     last_name: 'last_name2',
@@ -106,6 +114,7 @@ const users_seed = [
     email: 'user2@yoohoo.com',
     dev: false,
   },
+
   {
     first_name: 'first_name3',
     last_name: 'last_name3',
@@ -128,16 +137,19 @@ const bug_seed = [
     bug_name: 'bug_name1',
     description: 'description1',
   },
+
   {
     user_name: 'user_name2',
     bug_name: 'bug_name2',
     description: 'description2',
   },
+
   {
     user_name: 'user_name3',
     bug_name: 'bug_name3',
     description: 'description3',
   },
+
   {
     user_name: 'user_name1',
     bug_name: 'bug_name4',
@@ -155,16 +167,19 @@ const comment_thread_seed = [
     user_name: 'user_name2',
     comment: 'comment1',
   },
+
   {
     bug_id: 2,
     user_name: 'user_name2',
     comment: 'comment2',
   },
+
   {
     bug_id: 3,
     user_name: 'user_name3',
     comment: 'comment3',
   },
+
   {
     bug_id: 2,
     user_name: 'user_name1',
@@ -177,14 +192,17 @@ const bug_app_seed = [
     bug_id: 1,
     app_id: 1,
   },
+
   {
     bug_id: 2,
     app_id: 1,
   },
+
   {
     bug_id: 3,
     app_id: 1,
   },
+
   {
     bug_id: 4,
     app_id: 1,
@@ -196,14 +214,17 @@ const bug_severity_seed = [
     bug_id: 1,
     severity_id: 1,
   },
+
   {
     bug_id: 2,
     severity_id: 2,
   },
+
   {
     bug_id: 3,
     severity_id: 3,
   },
+
   {
     bug_id: 4,
     severity_id: 3,
@@ -224,6 +245,7 @@ const safeUser = {
     email: 'safeUser@yoohoo.com',
     dev: false,
   },
+
   result: {
     id: 4,
     first_name: 'safe first name',
@@ -236,12 +258,13 @@ const safeUser = {
 
 const safeBug = {
   request: {
-    user_id: 1,
+    user_name: 'user_name1',
     bug_name: 'safe bug',
     description: 'safe description',
     app_name: 'second-app',
     level: 'high',
   },
+
   result: {
     id: 5,
     userName: 'user_name1',
@@ -255,19 +278,63 @@ const safeBug = {
   },
 };
 
-const safeComment = {
+const invalidBug = {
+  bug_id: 1,
+  user_name: 'user_name1',
+  bug_name: 'safe bug',
+  description: 'safe description',
+  app_name: 'second-app',
+  level: 'high',
+};
+
+const safeCommentPost = {
   request: {
     bug_id: 1,
-    user_id: 1,
+    user_name: 'user_name1',
     comment: 'safe comment',
   },
+
   result: {
-    id: 4,
+    id: 5,
     bugName: 'bug_name1',
     userName: 'user_name1',
     comment: 'safe comment',
-    createdDate: 'safe comment',
   },
+
+  dbResult: {
+    id: 5,
+    bug_id: 1,
+    user_name: 'user_name1',
+    comment: 'safe comment',
+  },
+};
+
+const safeCommentPatch = {
+  request: {
+    bug_id: 2,
+    user_name: 'user_name1',
+    comment: 'safe comment',
+  },
+
+  result: {
+    id: 2,
+    bugName: 'bug_name2',
+    userName: 'user_name1',
+    comment: 'safe comment',
+  },
+
+  dbResult: {
+    id: 2,
+    bug_id: 2,
+    user_name: 'user_name1',
+    comment: 'safe comment',
+  },
+};
+
+const invalidComment = {
+  bug_id: 5,
+  user_name: 'user_name1',
+  comment: 'safe comment',
 };
 
 /*
@@ -285,6 +352,7 @@ const maliciousUser = {
     email: '<script>naughty</script>',
     dev: true,
   },
+
   result: {
     // ! check if (id = 4) and (password = HASH HERE!!!)
     firstName: '&lt;script&gt;naughty&lt;/script&gt;',
@@ -303,6 +371,7 @@ const maliciousBug = {
     app: 'main-app',
     severity: 'low',
   },
+
   result: {
     id: 5,
     userName: 'user_name1',
@@ -322,6 +391,7 @@ const maliciousComment = {
     user_id: 1,
     comment: '<script>naughty</script>',
   },
+
   result: {
     id: 4,
     bugName: 'user_name1',
@@ -345,6 +415,7 @@ const devBug1FullUpdate = {
     app: 'main-app',
     severity: 'high',
   },
+
   result: {
     id: 1,
     bugPostedBy: 'user_name1',
@@ -401,6 +472,7 @@ const GET_REQUESTS = {
       email: 'user1@yoohoo.com',
       dev: true,
     },
+
     {
       id: 3,
       first_name: 'first_name3',
@@ -411,6 +483,7 @@ const GET_REQUESTS = {
       email: 'user3@yoohoo.com',
       dev: true,
     },
+
     {
       id: 2,
       first_name: 'first_name2',
@@ -456,6 +529,7 @@ const GET_REQUESTS = {
       app: 'main-app',
       severity: 'low',
     },
+
     {
       id: 2,
       bugPostedBy: 'user_name2',
@@ -467,6 +541,7 @@ const GET_REQUESTS = {
       app: 'main-app',
       severity: 'medium',
     },
+
     {
       id: 3,
       bugPostedBy: 'user_name3',
@@ -478,6 +553,7 @@ const GET_REQUESTS = {
       app: 'main-app',
       severity: 'high',
     },
+
     {
       id: 4,
       bugPostedBy: 'user_name1',
@@ -493,6 +569,13 @@ const GET_REQUESTS = {
     },
   ],
 
+  commentId2: {
+    id: 2,
+    bugName: 'bug_name2',
+    userName: 'user_name2',
+    comment: 'comment2',
+  },
+
   latestCommentBug2: {
     id: 4,
     bugName: 'bug_name2',
@@ -507,12 +590,14 @@ const GET_REQUESTS = {
       userName: 'user_name1',
       comment: 'comment4',
     },
+
     {
       id: 2,
       bugName: 'bug_name2',
       userName: 'user_name2',
       comment: 'comment2',
     },
+
     {
       id: 1,
       bugName: 'bug_name2',
@@ -529,6 +614,7 @@ const GET_REQUESTS = {
       comment: 'comment1',
       createdDate: '',
     },
+
     {
       id: 2,
       bugName: 'bug_name2',
@@ -536,6 +622,7 @@ const GET_REQUESTS = {
       comment: 'comment2',
       createdDate: '',
     },
+
     {
       id: 3,
       bugName: 'bug_name3',
@@ -543,6 +630,7 @@ const GET_REQUESTS = {
       comment: 'comment3',
       createdDate: '',
     },
+
     {
       id: 4,
       bugName: 'bug_name2',
@@ -568,6 +656,56 @@ const GET_REQUESTS = {
       createdDate: '',
     },
   ],
+
+  filters: {
+    bug: {
+      dev: [
+        {
+          id: 3,
+          bugName: 'bug_name3',
+          userName: 'user_name3',
+          comment: 'comment3',
+        },
+      ],
+
+      nonDev: [
+        {
+          id: 1,
+          bugName: 'bug_name2',
+          userName: 'user_name2',
+          comment: 'comment1',
+        },
+        {
+          id: 2,
+          bugName: 'bug_name2',
+          userName: 'user_name2',
+          comment: 'comment2',
+        },
+      ],
+    },
+
+    user: {
+      dev: [
+        {
+          id: 3,
+          bugName: 'bug_name3',
+          userName: 'user_name3',
+          comment: 'comment3',
+        },
+      ],
+
+      nonDev: [
+        {
+          id: 1,
+          bugName: 'bug_name2',
+          userName: 'user_name2',
+          comment: 'comment1',
+        },
+      ],
+    },
+
+    none: 'No comments found for ',
+  },
 
   allApps: [
     { id: 1, rawName: 'main-app', formatName: 'Main App' },
@@ -698,11 +836,11 @@ const DELETE_REQUESTS = {
     severity: 'low',
   },
 
-  commentId1: {
-    id: 1,
-    bugName: 'bug_name1',
-    userName: 'user_name1',
-    comment: 'comment1',
+  commentId2: {
+    id: 2,
+    bugName: 'bug_name2',
+    userName: 'user_name2',
+    comment: 'comment2',
   },
 };
 
@@ -749,7 +887,10 @@ const getSeedData = () => ({
 const getClientSubmissions = () => ({
   safeUser,
   safeBug,
-  safeComment,
+  invalidBug,
+  safeCommentPost,
+  safeCommentPatch,
+  invalidComment,
 });
 
 const getMaliciousSubmissions = () => ({
@@ -781,6 +922,10 @@ const cleanBugs = (db) => {
   return db.raw(`TRUNCATE bug RESTART IDENTITY CASCADE;`);
 };
 
+const cleanComments = (db) => {
+  return db.raw(`TRUNCATE comment_thread RESTART IDENTITY CASCADE;`);
+};
+
 const seedTable = (db, table, data) => db(table).insert(data);
 
 const seedUsers = (db) => db(USERS).insert(users_seed);
@@ -794,6 +939,19 @@ const seedAllTables = async (db) => {
   await db(COMMENT_THREAD).insert(comment_thread_seed);
   await db(BUG_APP).insert(bug_app_seed);
   await db(BUG_SEVERITY).insert(bug_severity_seed);
+};
+
+const getFromDB = {
+  user(db, id) {},
+
+  bug(db, id) {},
+
+  async comment(db, id) {
+    const comm = await db('comment_thread').where({ id }).first();
+    return comm || null;
+  },
+
+  links(db, bug_id) {},
 };
 
 module.exports = {
@@ -812,7 +970,10 @@ module.exports = {
 
   cleanTables,
   cleanBugs,
+  cleanComments,
+
   seedTable,
   seedUsers,
   seedAllTables,
+  getFromDB,
 };

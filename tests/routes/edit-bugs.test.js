@@ -26,7 +26,7 @@ describe('Route: Edit-Bugs router', () => {
   after('disconnect from db', () => db.destroy());
 
   const authHeaders = { dev: {}, nonDev: {} };
-  beforeEach('set auth headers', async () => {
+  beforeEach('seed all tables and set auth headers', async () => {
     await helpers.seedAllTables(db);
 
     authHeaders.dev = await helpers.getAuthHeaders(

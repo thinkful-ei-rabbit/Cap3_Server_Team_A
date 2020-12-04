@@ -31,7 +31,7 @@ const CRUDService = {
   },
 
   deleteEntry(db, table, colName, colVal) {
-    return db(table).where(colName, colVal).del();
+    return db(table).where(colName, colVal).del('*');
   },
 
   updateDevField(db, user_name, dev) {

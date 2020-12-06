@@ -18,7 +18,7 @@ async function _bugName(db, bug_id, dev, user_name) {
     bug_id,
   );
 
-  if (dev || bug?.user_name === user_name) {
+  if (dev || (bug && bug.user_name === user_name)) {
     return bug.bug_name;
   }
 

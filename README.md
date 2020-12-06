@@ -251,6 +251,12 @@ There's nothing too special here, just basic Token authentication, password encr
 
 ## routes:
 
+### main endpoint:
+
+```
+  'https://the-swattr-api.herokuapp.com'
+```
+
 #### bug: `/api/bugs`
 
 ```
@@ -260,7 +266,6 @@ There's nothing too special here, just basic Token authentication, password encr
   '/app/:app'         -  GET (bugs by app)
   '/status/:status'   -  GET (bugs by status)
   '/severity/:level'  -  GET (bugs by severity)
-
 ```
 
 #### app: `/api/app`

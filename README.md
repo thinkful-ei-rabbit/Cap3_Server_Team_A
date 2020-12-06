@@ -47,13 +47,9 @@
 
 > ---
 >
-> _This will be a comprehensive README for the sake of both prospective employers and fellow cohort peers, and whomever else would be interested in some of the techniques I've learned creating my frist Fullstack application. As a bonus, this README has some interesting implementations, though I won't address them here._
 >
-> _If you'd like to test the server via Postman, visit the client app..._
->
-> <div><a href="https://https://the-swattr.herokuapp.com/api">here</a></div>
->
-> _...register a user, grab your Bearer Token in dev tools, and use this endpoint: https://glacial-basin-85263.herokuapp.com/setapp/v1_
+> _If you'd like to test the server, visit the client app..._
+> <div><a href="https://github.com/thinkful-ei-rabbit/Cap3_Client_Team_A">here</a></div>
 >
 > ---
 

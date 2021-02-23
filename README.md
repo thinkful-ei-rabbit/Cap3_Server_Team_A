@@ -23,7 +23,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://github.com/thinkful-ei-rabbit/Cap3_Server_Team_A">
+  <a href="https://cap3-client-team-a.vercel.app/">
     <img src="images/logo-dark.png" alt="Logo" >
   </a>
 
@@ -49,7 +49,7 @@
 >
 >
 > _If you'd like to test the server, visit the client app..._
-> <div><a href="https://github.com/thinkful-ei-rabbit/Cap3_Client_Team_A">here</a></div>
+> <div><a href="https://cap3-client-team-a.vercel.app/">here</a></div>
 >
 > ---
 
@@ -57,7 +57,7 @@
 
 ###### This README will systematically go over the entire app from the top level to the bottom layer, so I'll provide links to various sections for convenience.
 
-# TODO - ADD DIRECTORY LINKS!
+
 
 ---
 
